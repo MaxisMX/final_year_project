@@ -1,0 +1,23 @@
+# Phase 1 dependencies (data + RF baseline + backtest)
+# Phase 2 will add: tensorflow, keras
+# Phase 3 will add: shap
+# Phase 4 will add: flask, plotly
+
+# Core data
+yfinance>=0.2.40
+pandas>=2.2.0
+numpy>=1.26.0
+
+# ML baseline
+scikit-learn>=1.5.0
+
+# Plotting (for analysis notebooks)
+matplotlib>=3.8.0
+
+# Testing and code quality
+pytest>=8.0.0
+pytest-cov>=5.0.0
+
+# Optional but recommended
+ruff>=0.6.0          # fast linter
+ipykernel>=6.29.0    # for Jupyter notebooks

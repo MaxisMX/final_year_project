@@ -1,0 +1,19 @@
+[project]
+name = "financial-advisor-bot"
+version = "0.1.0"
+description = "ML-driven explainable stock advisor (CM3020 Final Year Project)"
+requires-python = ">=3.13"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+# Sensible defaults: pycodestyle, pyflakes, isort, flake8-bugbear, pyupgrade
+select = ["E", "F", "I", "B", "UP", "W"]
+ignore = []
