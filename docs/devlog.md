@@ -13,7 +13,7 @@ log at the end is not possible, so keep it current.
 
 ---
 
-## 2026-MM-DD — Phase 0 scaffold initialised
+## 2026-05-29 — Phase 0 scaffold initialised
 
 **Decision:** Project structure follows the six development phases (data,
 features, models, backtest, explain, web). Each phase is a separable subpackage

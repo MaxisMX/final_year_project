@@ -17,6 +17,7 @@ matplotlib>=3.8.0
 # Testing and code quality
 pytest>=8.0.0
 pytest-cov>=5.0.0
+pyarrow>=15.0.0
 
 # Optional but recommended
 ruff>=0.6.0          # fast linter
