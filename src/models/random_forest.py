@@ -45,7 +45,18 @@ from src.features.target import BUY, SELL
 # them here so the model picks them up. Keep this explicit — never just "all
 # columns", or you risk accidentally feeding the label or a future-derived
 # column into the model (leakage).
-FEATURE_COLUMNS = ["sma_20", "rsi_14"]
+FEATURE_COLUMNS = [
+    "sma_20",
+    "rsi_14",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "bb_width",
+    "vol_ratio_20",
+    "momentum_1d",
+    "momentum_5d",
+    "momentum_20d",
+]
 
 
 @dataclass
@@ -213,4 +224,4 @@ if __name__ == "__main__":
     print(result.confusion)
     print("\nFull report:")
     print(result.report)
-    print("Reminder: low-to-mid 50s%% accuracy is NORMAL here. 70%%+ => suspect leakage.")
+    print("Reminder: low-to-mid 50s%% accuracy is NORMAL here. 70%%+ => suspect leakage.")  

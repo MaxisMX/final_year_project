@@ -107,3 +107,100 @@ def test_add_indicators_attaches_columns_without_mutating() -> None:
     # New columns present
     assert "sma_20" in out.columns
     assert "rsi_14" in out.columns
+
+
+# --- Phase 2 indicators ------------------------------------------------------
+
+def test_macd_zero_on_constant_series() -> None:
+    """On a flat price, fast and slow EMAs are equal, so every MACD part is 0."""
+    from src.features.indicators import macd
+
+    const = pd.Series([100.0] * 60)
+    out = macd(const)
+    assert out["macd"].iloc[-1] == pytest.approx(0.0, abs=1e-9)
+    assert out["macd_signal"].iloc[-1] == pytest.approx(0.0, abs=1e-9)
+    assert out["macd_hist"].iloc[-1] == pytest.approx(0.0, abs=1e-9)
+
+
+def test_macd_rejects_fast_not_less_than_slow() -> None:
+    from src.features.indicators import macd
+
+    with pytest.raises(ValueError, match="must be <"):
+        macd(pd.Series([1.0, 2.0, 3.0]), fast=26, slow=12)
+
+
+def test_macd_hist_equals_line_minus_signal() -> None:
+    from src.features.indicators import macd
+
+    s = pd.Series(range(1, 100), dtype=float)
+    out = macd(s)
+    diff = out["macd"] - out["macd_signal"]
+    pd.testing.assert_series_equal(out["macd_hist"], diff, check_names=False)
+
+
+def test_bollinger_hand_verified() -> None:
+    """Window=3 on [1,2,3,4,5]; at t=2 mid=2, population std=0.8165.
+
+    upper = 2 + 2*0.8165 = 3.633, lower = 2 - 2*0.8165 = 0.367.
+    """
+    from src.features.indicators import bollinger_bands
+
+    s = pd.Series([1, 2, 3, 4, 5], dtype=float)
+    out = bollinger_bands(s, window=3, num_std=2.0)
+    assert out["bb_mid"].iloc[2] == pytest.approx(2.0)
+    assert out["bb_upper"].iloc[2] == pytest.approx(3.633, abs=0.01)
+    assert out["bb_lower"].iloc[2] == pytest.approx(0.367, abs=0.01)
+
+
+def test_bollinger_warmup_is_nan() -> None:
+    from src.features.indicators import bollinger_bands
+
+    s = pd.Series([1, 2, 3, 4, 5], dtype=float)
+    out = bollinger_bands(s, window=3)
+    assert out["bb_mid"].iloc[:2].isna().all()
+
+
+def test_volume_ratio_hand_verified() -> None:
+    """Volume [10,10,10,40], window=3: at t=3 avg of [10,10,40]? No — last 3 are
+    indices 1,2,3 = [10,10,40], mean=20, ratio=40/20=2.0."""
+    from src.features.indicators import volume_ratio
+
+    v = pd.Series([10, 10, 10, 40], dtype=float)
+    out = volume_ratio(v, window=3)
+    assert out.iloc[3] == pytest.approx(2.0)
+
+
+def test_momentum_hand_verified() -> None:
+    """2-day momentum on [1,2,3,4,5] at t=2: 3/1 - 1 = 2.0."""
+    from src.features.indicators import momentum
+
+    s = pd.Series([1, 2, 3, 4, 5], dtype=float)
+    out = momentum(s, periods=2)
+    assert out.iloc[2] == pytest.approx(2.0)
+    assert out.iloc[:2].isna().all()
+
+
+def test_momentum_rejects_bad_periods() -> None:
+    from src.features.indicators import momentum
+
+    with pytest.raises(ValueError, match="periods must be >= 1"):
+        momentum(pd.Series([1.0, 2.0]), periods=0)
+
+
+def test_add_indicators_includes_all_phase2_columns() -> None:
+    df = pd.DataFrame(
+        {
+            "Open": range(1, 60),
+            "High": range(1, 60),
+            "Low": range(1, 60),
+            "Close": range(1, 60),
+            "Volume": range(1, 60),
+        },
+        dtype=float,
+    )
+    out = add_indicators(df)
+    for col in [
+        "macd", "macd_signal", "macd_hist", "bb_width",
+        "vol_ratio_20", "momentum_1d", "momentum_5d", "momentum_20d",
+    ]:
+        assert col in out.columns, f"missing {col}"

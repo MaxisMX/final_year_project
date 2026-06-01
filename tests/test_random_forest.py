@@ -22,17 +22,18 @@ from src.models.random_forest import (
 
 
 def _make_labelled_frame(n: int = 200, seed: int = 0) -> pd.DataFrame:
-    """Build a synthetic labelled feature frame with a date index."""
+    """Build a synthetic labelled feature frame with a date index.
+
+    Generates every column in FEATURE_COLUMNS so the model's input contract is
+    satisfied as the indicator set grows.
+    """
+    from src.models.random_forest import FEATURE_COLUMNS
+
     rng = np.random.default_rng(seed)
     dates = pd.bdate_range("2018-01-01", periods=n)
-    return pd.DataFrame(
-        {
-            "sma_20": rng.normal(100, 5, n),
-            "rsi_14": rng.uniform(20, 80, n),
-            "label_5d": rng.integers(0, 2, n),
-        },
-        index=dates,
-    )
+    data = {col: rng.normal(0, 1, n) for col in FEATURE_COLUMNS}
+    data["label_5d"] = rng.integers(0, 2, n)
+    return pd.DataFrame(data, index=dates)
 
 
 def test_split_is_chronological() -> None:

@@ -106,16 +106,122 @@ def _wilder_smooth(values: pd.Series, window: int) -> pd.Series:
     return result
 
 
+def macd(
+    close: pd.Series,
+    fast: int = 12,
+    slow: int = 26,
+    signal: int = 9,
+) -> pd.DataFrame:
+    """Moving Average Convergence Divergence.
+
+    MACD line   = EMA(fast) - EMA(slow)
+    Signal line = EMA(signal) of the MACD line
+    Histogram   = MACD line - Signal line
+
+    EMAs use pandas' standard span-based exponential weighting (adjust=False),
+    which is the conventional MACD definition. On a flat price series every
+    component is 0, which is the sanity check the tests use.
+
+    Returns:
+        DataFrame with columns macd, macd_signal, macd_hist (same index as input).
+    """
+    if not (fast < slow):
+        raise ValueError(f"fast ({fast}) must be < slow ({slow}).")
+    ema_fast = close.ewm(span=fast, adjust=False).mean()
+    ema_slow = close.ewm(span=slow, adjust=False).mean()
+    macd_line = ema_fast - ema_slow
+    signal_line = macd_line.ewm(span=signal, adjust=False).mean()
+    hist = macd_line - signal_line
+    return pd.DataFrame(
+        {"macd": macd_line, "macd_signal": signal_line, "macd_hist": hist}
+    )
+
+
+def bollinger_bands(
+    close: pd.Series,
+    window: int = 20,
+    num_std: float = 2.0,
+) -> pd.DataFrame:
+    """Bollinger Bands.
+
+    Middle band = SMA(window)
+    Upper/Lower = middle +/- num_std * rolling standard deviation
+
+    We use the POPULATION standard deviation (ddof=0), which is the standard
+    Bollinger convention. The leading (window-1) rows are NaN.
+
+    Returns:
+        DataFrame with columns bb_mid, bb_upper, bb_lower, bb_width.
+        bb_width = (upper - lower) / mid, a useful scale-free volatility feature.
+    """
+    if window < 2:
+        raise ValueError(f"window must be >= 2, got {window}")
+    mid = close.rolling(window).mean()
+    std = close.rolling(window).std(ddof=0)
+    upper = mid + num_std * std
+    lower = mid - num_std * std
+    width = (upper - lower) / mid
+    return pd.DataFrame(
+        {"bb_mid": mid, "bb_upper": upper, "bb_lower": lower, "bb_width": width}
+    )
+
+
+def volume_ratio(volume: pd.Series, window: int = 20) -> pd.Series:
+    """Ratio of current volume to its rolling average.
+
+    volume_ratio(t) = volume(t) / mean(volume over last `window` days)
+
+    A value > 1 means today's volume is above its recent average (unusual
+    activity); < 1 means below. Scale-free, so comparable across stocks.
+    """
+    if window < 1:
+        raise ValueError(f"window must be >= 1, got {window}")
+    avg = volume.rolling(window).mean()
+    return (volume / avg).rename(f"vol_ratio_{window}")
+
+
+def momentum(close: pd.Series, periods: int) -> pd.Series:
+    """Price momentum: fractional change over `periods` trading days.
+
+    momentum(t) = close(t) / close(t - periods) - 1
+
+    The first `periods` rows are NaN. This is purely backward-looking, so it is
+    leakage-safe as a feature.
+    """
+    if periods < 1:
+        raise ValueError(f"periods must be >= 1, got {periods}")
+    return close.pct_change(periods=periods).rename(f"momentum_{periods}d")
+
+
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
-    """Attach the current indicator set to an OHLCV frame.
+    """Attach the full indicator set to an OHLCV frame.
 
     Returns a NEW frame with indicator columns added. Input is not mutated.
-    As we add indicators in later phases, this is the single place to register
-    them so the rest of the pipeline picks them up automatically.
+    This is the single registration point — add new indicators here and the
+    rest of the pipeline picks them up. (Remember to also add their column names
+    to FEATURE_COLUMNS in src/models/random_forest.py so the model uses them.)
     """
     out = df.copy()
+
+    # Phase 1 indicators
     out["sma_20"] = sma(df["Close"], window=20)
     out["rsi_14"] = rsi(df["Close"], window=14)
+
+    # Phase 2 indicators
+    macd_df = macd(df["Close"])
+    out["macd"] = macd_df["macd"]
+    out["macd_signal"] = macd_df["macd_signal"]
+    out["macd_hist"] = macd_df["macd_hist"]
+
+    bb_df = bollinger_bands(df["Close"], window=20)
+    out["bb_width"] = bb_df["bb_width"]  # scale-free; the raw bands track price
+
+    out["vol_ratio_20"] = volume_ratio(df["Volume"], window=20)
+
+    out["momentum_1d"] = momentum(df["Close"], periods=1)
+    out["momentum_5d"] = momentum(df["Close"], periods=5)
+    out["momentum_20d"] = momentum(df["Close"], periods=20)
+
     return out
 
 
@@ -127,7 +233,9 @@ if __name__ == "__main__":
     data = fetch_ohlcv("MSFT")
     feat = add_indicators(data)
     print("Columns:", feat.columns.tolist())
-    print("\nLast 5 rows (indicators populated):")
-    print(feat[["Close", "sma_20", "rsi_14"]].tail())
+    print("\nLast 5 rows (sample of indicators):")
+    print(feat[["Close", "sma_20", "rsi_14", "macd", "bb_width", "momentum_5d"]].tail())
     print("\nRSI range check — should sit within [0, 100]:")
     print(f"  min: {feat['rsi_14'].min():.2f}, max: {feat['rsi_14'].max():.2f}")
+    print(f"\nMACD on constant series is 0; here MACD ranges "
+          f"{feat['macd'].min():.2f} to {feat['macd'].max():.2f}")
