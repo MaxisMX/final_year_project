@@ -10,6 +10,7 @@ numpy>=1.26.0
 
 # ML baseline
 scikit-learn>=1.5.0
+tensorflow>=2.18.0
 
 # Plotting (for analysis notebooks)
 matplotlib>=3.8.0
