@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plainstock — clear stock guidance, in plain English</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="{{ url_for('static', filename='plotly.min.js') }}"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <p class="eyebrow">Plain-English stock guidance</p>
+      <h1>What's the read on<br><span class="accent">your stock?</span></h1>
+      <p class="lede">
+        Type a ticker. We analyse the recent price action and explain, in
+        everyday language, what the signals are saying — so you can decide for
+        yourself.
+      </p>
+    </header>
+
+    <section class="search" aria-label="Look up a stock">
+      <form id="lookup-form" autocomplete="off">
+        <label for="ticker" class="visually-hidden">Stock ticker</label>
+        <input
+          type="text"
+          id="ticker"
+          name="ticker"
+          placeholder="Try MSFT, AAPL, GOOGL…"
+          maxlength="10"
+          aria-describedby="hint"
+        >
+        <button type="submit" id="go">Get the read</button>
+      </form>
+      <p id="hint" class="hint">US stock symbols. The first lookup for a stock trains a model and can take 30–60 seconds.</p>
+    </section>
+
+    <!-- Loading state -->
+    <section id="loading" class="panel loading" hidden>
+      <div class="pulse" aria-hidden="true"></div>
+      <p class="loading-title">Reading <span id="loading-ticker"></span>…</p>
+      <p class="loading-note">Training a model on its price history. This is slow the first time — worth the wait.</p>
+    </section>
+
+    <!-- Error state -->
+    <section id="error" class="panel error" hidden>
+      <p class="error-title">Couldn't read that one</p>
+      <p id="error-message"></p>
+    </section>
+
+    <!-- Result state -->
+    <section id="result" class="panel result" hidden>
+      <div class="verdict">
+        <p class="verdict-label">The read on <span id="result-ticker"></span><span id="result-date" class="verdict-date"></span></p>
+        <p class="verdict-word" id="verdict-word"></p>
+        <p class="verdict-tally" id="verdict-tally"></p>
+      </div>
+
+      <div class="reasoning">
+        <p id="result-headline" class="headline"></p>
+        <ul id="signal-list" class="signals"></ul>
+      </div>
+
+      <div class="chart-wrap">
+        <p class="chart-label">Recent price</p>
+        <div id="chart"></div>
+      </div>
+
+      <p class="disclaimer">
+        This is an educational project, not financial advice. Predicting short-term
+        prices is genuinely hard — treat any single read with healthy scepticism.
+      </p>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
