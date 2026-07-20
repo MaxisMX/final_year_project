@@ -163,7 +163,7 @@
       errorMessage.textContent = "Type a stock symbol first — like MSFT.";
       showOnly(errorPanel);
       return;
-    }
+    } 
     lookup(ticker);
   });
-})();
+})();         

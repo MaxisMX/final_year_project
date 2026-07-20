@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+
 import pandas as pd
 
 from src.data.fetcher import fetch_ohlcv
@@ -64,6 +65,7 @@ class Recommendation:
 
 class TickerError(ValueError):
     """Raised when a ticker can't be fetched or has insufficient data."""
+
 
 
 def _prepare_data(ticker: str, start: str) -> pd.DataFrame:
@@ -117,11 +119,12 @@ def get_recommendation(
         )
 
     # Train (or reuse cached) LSTM for this ticker.
-    if use_cache and ticker in _MODEL_CACHE:
-        artifacts = _MODEL_CACHE[ticker]
+    cache_key = (ticker, str(clean.index.max().date()))
+    if use_cache and cache_key in _MODEL_CACHE:
+        artifacts = _MODEL_CACHE[cache_key]
     else:
         artifacts = train_lstm(clean, lookback=lookback)
-        _MODEL_CACHE[ticker] = artifacts
+        _MODEL_CACHE[cache_key] = artifacts
 
     # Predict on the most recent window. predict_lstm returns predictions aligned
     # to each window's last day; we want the very latest one.

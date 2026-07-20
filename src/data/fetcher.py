@@ -78,6 +78,18 @@ def count_missing_trading_days(df: pd.DataFrame) -> int:
 def _cache_path(ticker: str, cache_dir: Path) -> Path:
     return cache_dir / f"{ticker.upper()}_ohlcv.parquet"
 
+def _is_stale(path: Path) -> bool:
+    #True if the cached file doesn't include the most recent trading day.
+    try: 
+        cached = pd.read_parquet(path)
+    except Exception:
+        return True
+    if cached.empty:
+        return True
+    last_cached = cached.index.max().date()
+    today = pd.Timestamp.today().date() 
+    last_weekday = pd.bdate_range(end=today, periods=1)[0].date()  # last trading day
+    return last_cached < last_weekday
 
 def fetch_ohlcv(
     ticker: str,
@@ -107,7 +119,7 @@ def fetch_ohlcv(
     cache_dir.mkdir(parents=True, exist_ok=True)
     path = _cache_path(ticker, cache_dir)
 
-    if path.exists() and not force_refresh:
+    if path.exists() and not force_refresh and not _is_stale(path):
         logger.info("Loading %s from cache: %s", ticker, path)
         return pd.read_parquet(path)
 
@@ -144,7 +156,7 @@ def fetch_ohlcv(
 if __name__ == "__main__":
     # Manual smoke run: python -m src.data.fetcher
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-    data = fetch_ohlcv("MSFT", start="2015-01-01")
+    data = fetch_ohlcv("MSFT", start="2015-01-01", force_refresh=True)
     print(f"\nFetched {len(data)} rows for MSFT")
     print(f"Date range: {data.index.min().date()} to {data.index.max().date()}")
     print(f"Missing weekdays in range: {count_missing_trading_days(data)}")
