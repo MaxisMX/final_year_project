@@ -70,15 +70,14 @@ def test_count_missing_trading_days_empty() -> None:
 
 def test_fetch_writes_and_reads_cache(tmp_path) -> None:
     """First call downloads (mocked); second call must read cache, not re-download."""
-    with patch("src.data.fetcher.yf.download", return_value=_fake_yf_frame()) as mock_dl:
+    with patch("src.data.fetcher.yf.download", return_value=_fake_yf_frame()) as mock_dl, \
+         patch("src.data.fetcher._is_stale", return_value=False):
         first = fetcher.fetch_ohlcv("MSFT", cache_dir=tmp_path)
         assert mock_dl.call_count == 1
         assert first.columns.tolist() == fetcher.OHLCV_COLUMNS
 
-        # Cache file should now exist.
         assert (tmp_path / "MSFT_ohlcv.parquet").exists()
 
-        # Second call: download must NOT be called again.
         second = fetcher.fetch_ohlcv("MSFT", cache_dir=tmp_path)
         assert mock_dl.call_count == 1
         pd.testing.assert_frame_equal(first, second)
@@ -101,3 +100,11 @@ def test_ticker_is_case_insensitive(tmp_path) -> None:
     with patch("src.data.fetcher.yf.download", return_value=_fake_yf_frame()):
         fetcher.fetch_ohlcv("msft", cache_dir=tmp_path)
         assert (tmp_path / "MSFT_ohlcv.parquet").exists()
+
+def test_stale_cache_triggers_refetch(tmp_path) -> None:
+    """If the cached data is stale (old dates), a second fetch re-downloads."""
+    with patch("src.data.fetcher.yf.download", return_value=_fake_yf_frame()) as mock_dl, \
+         patch("src.data.fetcher._is_stale", return_value=True):
+        fetcher.fetch_ohlcv("MSFT", cache_dir=tmp_path)
+        fetcher.fetch_ohlcv("MSFT", cache_dir=tmp_path)
+        assert mock_dl.call_count == 2

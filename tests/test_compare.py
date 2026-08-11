@@ -47,7 +47,7 @@ def test_aggregate_statistics_consistent() -> None:
 
 def test_winner_is_valid_label() -> None:
     result = compare_models(_frame(400), n_splits=3, lookback=20, lstm_epochs=2)
-    assert result.winner() in {"LSTM", "RandomForest", "tie"}
+    assert result.winner() in {"LSTM", "RandomForest", "GRU", "CNN-LSTM", "tie"}
 
 
 def test_summary_frame_has_both_models() -> None:
@@ -65,3 +65,5 @@ def test_rejects_missing_columns() -> None:
     df = _frame(400).drop(columns=["macd"])
     with pytest.raises(ValueError, match="Missing required columns"):
         compare_models(df, n_splits=3, lookback=20)
+
+
