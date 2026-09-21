@@ -1,7 +1,13 @@
 /* Plainstock frontend logic.
-   Talks to the Flask API (/api/recommend/<ticker>), manages the three states
-   (loading / error / result), and draws the price chart with Plotly.
-   No framework — plain DOM, kept readable for the report. */
+   Talks to the Flask API (/api/recommend/<ticker>), manages the panel states
+   (loading / error / result), renders the model's own reasoning, and draws the
+   price chart with Plotly. No framework — plain DOM, kept readable for the
+   report.
+
+   Note on the result panel: the API now reports whether the model was behaving
+   like a predictor at all. When it has collapsed to one class, there is no
+   reasoning to show, so the reasoning block is hidden entirely and only the
+   explanation of *why* nothing is shown appears. */
 
 (function () {
   "use strict";
@@ -29,11 +35,11 @@
     goBtn.textContent = busy ? "Reading…" : "Get the read";
   }
 
-  // Training an LSTM on demand can take a while, so we allow a generous window
-  // before giving up. Without this, the browser's default behaviour can abandon
-  // the request while the server is still working, showing a false "server
-  // unreachable" error even though a result is coming.
-  const REQUEST_TIMEOUT_MS = 180000; // 3 minutes
+  // The served model is a Random Forest, which trains in seconds rather than
+  // the tens of seconds the earlier sequence model needed. A 60-second ceiling
+  // is ample; it exists only so a stalled request fails visibly rather than
+  // hanging.
+  const REQUEST_TIMEOUT_MS = 60000;
 
   async function lookup(ticker) {
     loadingTicker.textContent = ticker;
@@ -43,43 +49,79 @@
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
+    // Stage 1: the network request. Only failures here mean the server
+    // could not be reached.
+    let resp, data;
     try {
-      const resp = await fetch(`/api/recommend/${encodeURIComponent(ticker)}`, {
+      resp = await fetch(`/api/recommend/${encodeURIComponent(ticker)}`, {
         signal: controller.signal,
       });
-      console.log("[plainstock] fetch returned, status:", resp.status);
-      const data = await resp.json();
-      console.log("[plainstock] parsed JSON:", data);
-
-      if (!resp.ok) {
-        // API returned a structured error (400/500).
-        errorMessage.textContent =
-          data.error || "Something went wrong. Please try again.";
-        showOnly(errorPanel);
-        return;
-      }
-
-      console.log("[plainstock] rendering result…");
-      renderResult(data);
-      console.log("[plainstock] render complete, showing result panel");
-      showOnly(resultPanel);
+      data = await resp.json();
     } catch (err) {
-      console.error("[plainstock] caught error:", err);
-      if (err.name === "AbortError") {
-        errorMessage.textContent =
-          "This is taking longer than expected — the model may still be " +
-          "training. Give it a moment and try again; the second attempt is " +
-          "usually instant.";
-      } else {
-        errorMessage.textContent =
-          "Couldn't reach the server. Make sure it's running (python -m " +
-          "src.web.app) and try again.";
-      }
+      console.error("[plainstock] request failed:", err);
+      errorMessage.textContent =
+        err.name === "AbortError"
+          ? "This is taking longer than expected. Give it a moment and try " +
+            "again; the second attempt is usually instant."
+          : "Couldn't reach the server. Make sure it's running (python -m " +
+            "src.web.app) and try again.";
       showOnly(errorPanel);
-    } finally {
       clearTimeout(timer);
       setBusy(false);
+      return;
     }
+    clearTimeout(timer);
+
+    if (!resp.ok) {
+      errorMessage.textContent =
+        data.error || "Something went wrong. Please try again.";
+      showOnly(errorPanel);
+      setBusy(false);
+      return;
+    }
+
+    // Stage 2: rendering. The server answered; a failure here is a page bug,
+    // so it is reported as one rather than blamed on the connection.
+    try {
+      renderResult(data);
+      showOnly(resultPanel);
+    } catch (err) {
+      console.error("[plainstock] render failed:", err);
+      errorMessage.textContent =
+        "The analysis finished, but the page couldn't display it (" +
+        err.message + "). The page template may be out of date.";
+      showOnly(errorPanel);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /* Map a SHAP direction onto the existing bullish/bearish bullet styling. */
+  function leaningFromDirection(direction) {
+    if (direction === "toward BUY") return "bullish";
+    if (direction === "toward SELL") return "bearish";
+    return "neutral";
+  }
+
+  function renderConfidence(confidence, explained) {
+    const banner = document.getElementById("confidence-banner");
+    const message = document.getElementById("confidence-message");
+    const summary = document.getElementById("verdict-confidence");
+
+    const pct = Math.round(confidence.buy_probability * 100);
+    summary.textContent = `Model probability for BUY: ${pct}%`;
+
+    banner.className = "confidence-banner " + confidence.status;
+
+    if (confidence.status === "ok") {
+      banner.hidden = true;
+    } else {
+      message.textContent = confidence.message;
+      banner.hidden = false;
+    }
+
+    // When the model has collapsed there is no reasoning to display at all.
+    document.getElementById("reasoning").hidden = !explained;
   }
 
   function renderResult(data) {
@@ -92,19 +134,40 @@
     word.className =
       "verdict-word " + (data.recommendation === "BUY" ? "buy" : "sell");
 
-    document.getElementById("verdict-tally").textContent =
-      `${data.bullish_count} signals leaning positive · ${data.bearish_count} leaning cautious`;
+    renderConfidence(data.confidence, data.explained);
 
     document.getElementById("result-headline").textContent = data.headline;
 
     const list = document.getElementById("signal-list");
     list.innerHTML = "";
-    data.signals.forEach((s) => {
+    (data.signals || []).forEach((s) => {
       const li = document.createElement("li");
-      li.className = s.leaning; // bullish | bearish | neutral
-      li.textContent = s.phrase;
+      li.className = leaningFromDirection(s.direction);
+
+      const text = document.createElement("span");
+      text.className = "signal-text";
+      text.textContent = s.sentence;
+
+      const weight = document.createElement("span");
+      weight.className = "signal-weight";
+      weight.textContent =
+        `${s.display_name}: ${s.shap_value > 0 ? "+" : ""}${s.shap_value}`;
+      weight.title =
+        "SHAP value — how far this feature moved the model's decision. " +
+        "Positive pushes toward BUY, negative toward SELL.";
+
+      li.appendChild(text);
+      li.appendChild(weight);
       list.appendChild(li);
     });
+
+    const caveat = document.getElementById("result-caveat");
+    if (data.caveat) {
+      caveat.textContent = data.caveat;
+      caveat.hidden = false;
+    } else {
+      caveat.hidden = true;
+    }
 
     drawChartSafely(data.price_history);
   }
@@ -150,8 +213,6 @@
       displayModeBar: false,
       responsive: true,
     }).then(function () {
-      // Plotly can initially size to its own default width, overflowing the
-      // card. Force a resize to the container once drawn.
       Plotly.Plots.resize("chart");
     });
   }
@@ -163,7 +224,7 @@
       errorMessage.textContent = "Type a stock symbol first — like MSFT.";
       showOnly(errorPanel);
       return;
-    } 
+    }
     lookup(ticker);
   });
-})();         
+})();

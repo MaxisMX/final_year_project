@@ -17,7 +17,7 @@
       <h1>What's the read on<br><span class="accent">your stock?</span></h1>
       <p class="lede">
         Type a ticker. We analyse the recent price action and explain, in
-        everyday language, what the signals are saying — so you can decide for
+        everyday language, what drove the model's call — so you can decide for
         yourself.
       </p>
     </header>
@@ -35,14 +35,14 @@
         >
         <button type="submit" id="go">Get the read</button>
       </form>
-      <p id="hint" class="hint">US stock symbols. The first lookup for a stock trains a model and can take 30–60 seconds.</p>
+      <p id="hint" class="hint">US stock symbols. Analysis takes a few seconds.</p>
     </section>
 
     <!-- Loading state -->
     <section id="loading" class="panel loading" hidden>
       <div class="pulse" aria-hidden="true"></div>
       <p class="loading-title">Reading <span id="loading-ticker"></span>…</p>
-      <p class="loading-note">Training a model on its price history. This is slow the first time — worth the wait.</p>
+      <p class="loading-note">Working out what the indicators are doing and what drove the call.</p>
     </section>
 
     <!-- Error state -->
@@ -56,12 +56,19 @@
       <div class="verdict">
         <p class="verdict-label">The read on <span id="result-ticker"></span><span id="result-date" class="verdict-date"></span></p>
         <p class="verdict-word" id="verdict-word"></p>
-        <p class="verdict-tally" id="verdict-tally"></p>
+        <p class="verdict-tally" id="verdict-confidence"></p>
       </div>
 
-      <div class="reasoning">
+      <!-- Shown when the model is undecided or has collapsed to one class -->
+      <div id="confidence-banner" class="confidence-banner" role="status" hidden>
+        <p id="confidence-message"></p>
+      </div>
+
+      <!-- Hidden entirely when the model has collapsed: no reasoning to show -->
+      <div class="reasoning" id="reasoning">
         <p id="result-headline" class="headline"></p>
         <ul id="signal-list" class="signals"></ul>
+        <p id="result-caveat" class="caveat" hidden></p>
       </div>
 
       <div class="chart-wrap">
@@ -70,8 +77,9 @@
       </div>
 
       <p class="disclaimer">
-        This is an educational project, not financial advice. Predicting short-term
-        prices is genuinely hard — treat any single read with healthy scepticism.
+        Plainstock is an educational tool for learning how market indicators
+        work. It is not financial advice, and none of its models reliably
+        predicted short-term price direction in testing.
       </p>
     </section>
   </main>

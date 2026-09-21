@@ -26,7 +26,7 @@ import logging
 
 from flask import Flask, jsonify, render_template
 
-from src.web.service import TickerError, get_recommendation
+from src.web.serviceold import TickerError, get_recommendation
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,8 @@ def api_recommend(ticker: str):
 
 
 if __name__ == "__main__":
-    # Development server only. debug=True gives helpful errors while building;
-    # turn it off for any real deployment.
     logging.basicConfig(level=logging.INFO)
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    import src.web.service as _svc
+    print("SERVICE LOADED FROM:", _svc.__file__,
+          "| new version:", hasattr(_svc, "assess_confidence"))
+    app.run(debug=True, use_reloader=False, host="127.0.0.1", port=5001)

@@ -342,7 +342,7 @@ if __name__ == "__main__":
     from src.features.indicators import add_indicators
     from src.features.target import attach_label, drop_unlabelled
 
-    data_name = "TSLA"
+    data_name = "SPY"
     print("Building features + labels...")
     data = fetch_ohlcv(data_name)
     feat = add_indicators(data)
@@ -401,4 +401,4 @@ if __name__ == "__main__":
         "  - If no model beats the baseline, say so plainly. That is a real\n"
         "    finding, consistent with the published literature."
     )
-    print(f"Fetched data: {data_name}")
+    print(f"Fetched data: {data_name}") 

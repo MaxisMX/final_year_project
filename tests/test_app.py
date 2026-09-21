@@ -12,7 +12,7 @@ from unittest.mock import patch
 import pytest
 
 from src.web import app as app_module
-from src.web.service import Recommendation, TickerError
+from src.web.serviceold import Recommendation, TickerError
 from src.explain.plain_english import explain
 from src.features.target import BUY
 
