@@ -1,7 +1,5 @@
-# Phase 1 dependencies (data + RF baseline + backtest)
-# Phase 2 will add: tensorflow, keras
-# Phase 3 will add: shap
-# Phase 4 will add: flask, plotly
+# Plainstock: Python dependencies
+# Install with: pip install -r requirements.txt
 
 # Core data
 yfinance>=0.2.40
