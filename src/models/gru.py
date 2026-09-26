@@ -66,8 +66,8 @@ def build_gru(
     n_features: int,
     seed: int = DEFAULT_SEED,
 ) -> Sequential:
-    """Build a compact GRU classifier.
-
+    """
+    Build a compact GRU classifier.
     Architecture mirrors the LSTM exactly apart from the recurrent unit:
         GRU(32)     -> recurrent layer, same size as the LSTM for fairness
         Dropout     -> regularisation
@@ -108,7 +108,8 @@ def train_gru(
     seed: int = DEFAULT_SEED,
     verbose: int = 0,
 ) -> GRUArtifacts:
-    """Train a GRU on a training slice (leakage-safe scaling + windowing).
+    """
+    Train a GRU on a training slice (leakage-safe scaling + windowing).
 
     Mirrors train_lstm exactly apart from the model builder, so the two are
     directly comparable.

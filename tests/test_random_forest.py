@@ -1,8 +1,9 @@
-"""Tests for src.models.random_forest.
+"""
+Tests for src.models.random_forest.
 
 The key guarantees we test:
-  - The split is CHRONOLOGICAL (train strictly before test, no shuffling). This
-    is the leakage guard for this module.
+  - The split is CHRONOLOGICAL (train strictly before test, no shuffling).
+  - This is the leakage guard for this module.
   - Guard rails fire on NaN features/labels and missing columns.
   - The model trains and the evaluation produces sane, in-range metrics, plus
     an honest majority-class baseline to compare against.
@@ -22,7 +23,8 @@ from src.models.random_forest import (
 
 
 def _make_labelled_frame(n: int = 200, seed: int = 0) -> pd.DataFrame:
-    """Build a synthetic labelled feature frame with a date index.
+    """
+    Build a synthetic labelled feature frame with a date index.
 
     Generates every column in FEATURE_COLUMNS so the model's input contract is
     satisfied as the indicator set grows.
@@ -93,7 +95,8 @@ def test_train_and_evaluate_produces_valid_metrics() -> None:
 
 
 def test_evaluate_reports_majority_baseline() -> None:
-    """On pure-random labels, the model should not meaningfully beat the baseline.
+    """
+    On pure-random labels, the model should not meaningfully beat the baseline.
 
     This is a sanity check: with noise features and random labels, there is no
     signal to learn, so a leakage-free pipeline must NOT produce high accuracy.

@@ -1,15 +1,16 @@
-"""SHAP feature-importance analysis for the Random Forest model.
+"""
+SHAP feature-importance analysis for the Random Forest model.
 
 Phase 3 (part 2). Where the plain-English generator interprets the INDICATORS,
 SHAP interprets the MODEL: it quantifies how much each feature pushed a given
 prediction toward BUY or SELL. This is genuine model interpretability.
 
-Why SHAP on the Random Forest (not the LSTM)
+Why SHAP on the Random Forest and not on LSTM
 --------------------------------------------
 SHAP's TreeExplainer is exact and fast for tree models. On sequential LSTMs,
 SHAP is awkward and slow (and conceptually messy across 60 timesteps), so per
 the project plan we run rigorous SHAP on the RF and treat LSTM interpretability
-as a separate, smaller question. State this scoping choice in the report — it's
+as a separate, smaller question. State this scoping choice in the report it's
 a deliberate, defensible decision, not an omission.
 
 Output shape note
@@ -40,7 +41,8 @@ class ShapAnalysis:
     feature_names: list[str]
 
     def global_importance(self) -> pd.Series:
-        """Mean absolute SHAP value per feature — overall importance ranking.
+        """
+        Mean absolute SHAP value per feature — overall importance ranking.
 
         Higher = the feature mattered more to the model's decisions overall,
         regardless of direction. This is the headline 'which indicators drive
@@ -51,7 +53,8 @@ class ShapAnalysis:
         )
 
     def top_features_for_row(self, row_index: int, n: int = 3) -> pd.Series:
-        """The n features with the largest (signed) push for one prediction.
+        """
+        The n features with the largest (signed) push for one prediction.
 
         Positive = pushed toward BUY, negative = pushed toward SELL. Useful for
         explaining a single recommendation: 'RSI and MACD drove this call'.
@@ -64,7 +67,8 @@ def compute_shap(
     model: RandomForestClassifier,
     X: pd.DataFrame,
 ) -> ShapAnalysis:
-    """Compute SHAP values for a trained Random Forest on samples X.
+    """
+    Compute SHAP values for a trained Random Forest on samples X.
 
     Args:
         model: A fitted RandomForestClassifier.

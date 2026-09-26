@@ -1,8 +1,8 @@
-"""Tests for src.backtest.walk_forward.
+"""
+Tests for src.backtest.walk_forward.
 
 Key guarantees:
-  - Each fold's training data ends strictly before its test data begins
-    (the walk-forward leakage guard).
+  - Each fold's training data ends strictly before its test data begins (the walk-forward leakage guard).
   - The training window EXPANDS fold over fold.
   - Aggregate statistics (mean/std) are computed correctly.
   - Guard rails fire on bad input.

@@ -48,8 +48,8 @@ def build_cnn_lstm(
         pool_size: int = DEFAULT_POOL_SIZE,
         seed: int = DEFAULT_SEED,
 ) -> Sequential : 
-    """ Build a compact CNN-LSTM hybrid classifier.
- 
+    """ 
+    Build a compact CNN-LSTM hybrid classifier.
     Architecture:
         Conv1D      -> learns local patterns across neighbouring days
         MaxPooling1D-> halves the sequence length, keeping the strongest signals
@@ -112,7 +112,8 @@ def train_cnn_lstm(
     seed: int = DEFAULT_SEED,
     verbose: int = 0,
 ) -> CNNLSTMArtifacts:
-    """Train a CNN-LSTM on a training slice (leakage-safe scaling + windowing).
+    """
+    Train a CNN-LSTM on a training slice (leakage-safe scaling + windowing).
     Mirrors train_lstm exactly apart from the model builder, so the two are
     directly comparable. 
     """

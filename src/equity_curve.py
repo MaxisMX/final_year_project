@@ -1,4 +1,5 @@
-"""Equity-curve figure for the backtest discussion (Sections 5.5 and 5.8).
+"""
+Equity-curve figure for the backtest discussion (Sections 5.5 and 5.8).
 
 Run from the project root:
 

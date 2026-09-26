@@ -1,0 +1,11 @@
+Ticker,Sector,Accuracy,SD,Baseline,Beats?
+SPY,Broad market index,0.449,0.035,0.618,No
+MSFT,Large-cap technology,0.472,0.033,0.59,No
+TSLA,High-volatility growth,0.502,0.037,0.538,No
+AAPL,Large-cap technology,0.455,0.039,0.59,No
+JNJ,"Healthcare, defensive",0.498,0.033,0.555,No
+JPM,Financials,0.478,0.048,0.574,No
+XOM,Energy,0.479,0.039,0.553,No
+KO,Consumer staples,0.483,0.016,0.558,No
+NVDA,Semiconductors,0.478,0.05,0.589,No
+WMT,Retail,0.474,0.052,0.56,No

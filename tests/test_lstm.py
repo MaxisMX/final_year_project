@@ -1,13 +1,14 @@
-"""Tests for src.models.lstm.
+"""
+Tests for src.models.lstm.
 
-These deliberately use a TINY lookback and few epochs so they run fast — the
-goal is to verify the leakage-safe plumbing, not to train a good model:
+These deliberately use a TINY lookback and few epochs so they run fast 
+the goal is to verify the leakage-safe plumbing, not to train a good model:
   - The scaler is fit on training data only.
   - Predictions align to the correct dates (last day of each window).
   - Train and test windowing never straddle the boundary.
 
 LSTM training is slow and slightly non-deterministic, so we do NOT assert exact
-accuracy values — only shapes, alignment, and the leakage guarantees.
+accuracy values only shapes, alignment, and the leakage guarantees.
 """
 
 from __future__ import annotations
@@ -38,9 +39,9 @@ def test_train_returns_artifacts_with_fitted_scaler() -> None:
 
 
 def test_scaler_fit_on_train_only() -> None:
-    """The scaler's learned mean must match the TRAINING data, not test data.
-
-    We fit on one frame, then check the scaler's mean equals that frame's mean —
+    """
+    The scaler's learned mean must match the TRAINING data, not test data.
+    We fit on one frame, then check the scaler's mean equals that frame's mean 
     proving it never saw any other (test) data.
     """
     df = _frame(120, seed=1)

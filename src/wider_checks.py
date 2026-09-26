@@ -9,7 +9,7 @@ web service, the Flask app, or any saved model, so it cannot affect the running
 application.
 
 What it produces
-----------------
+
   Table A  Random Forest walk-forward accuracy vs majority baseline across ten
            stocks spanning several sectors, rather than the three used in
            Section 5.3.

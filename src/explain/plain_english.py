@@ -1,9 +1,10 @@
-"""Plain-English explanation generator for BUY/SELL recommendations.
+"""
+Plain-English explanation generator for BUY/SELL recommendations.
 
-Phase 3 (part 1) — the project's differentiator. Turns indicator values into
+Phase 3 (part 1) the project's differentiator. Turns indicator values into
 simple, friendly sentences a non-technical user can understand.
 
-IMPORTANT distinction (state this in the report)
+IMPORTANT distinction (This has been state in report)
 ------------------------------------------------
 This module explains what the TECHNICAL INDICATORS are saying in plain language.
 It does NOT claim to explain the model's internal reasoning. Those are different:
@@ -61,7 +62,7 @@ class Explanation:
         return "\n".join(lines)
 
 
-# --- Individual indicator rules ----------------------------------------------
+# aIndividual indicator rules 
 # Each returns a Signal. Thresholds use conventional TA levels; keep them here
 # so they're documented and easy to defend/tune.
 
@@ -149,7 +150,8 @@ def explain(
     macd_hist: float,
     momentum_5d: float,
 ) -> Explanation:
-    """Produce a plain-English explanation alongside the model's recommendation.
+    """
+    Produce a plain-English explanation alongside the model's recommendation.
 
     Args:
         recommendation: The model's prediction (BUY or SELL constant).

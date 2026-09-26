@@ -1,4 +1,5 @@
-"""Tests for src.features.target.
+"""
+Tests for src.features.target.
 
 The headline test (`test_label_hand_verified`) uses a tiny price series where
 every label can be worked out by hand, so the leakage-safe labelling is proven,
@@ -22,7 +23,8 @@ from src.features.target import (
 
 
 def test_label_hand_verified() -> None:
-    """Hand-worked example with horizon=2.
+    """
+    Hand-worked example with horizon=2.
 
     Prices:   index 0..5 = [10, 11, 9, 12, 8, 13]
     horizon=2, so label(t) compares close(t+2) vs close(t):
@@ -45,7 +47,7 @@ def test_label_hand_verified() -> None:
 
 
 def test_last_horizon_rows_are_nan() -> None:
-    """The final `horizon` rows must have no label — there is no future for them."""
+    """The final `horizon` rows must have no label there is no future for them."""
     close = pd.Series(range(1, 51), dtype=float)
     for h in (1, 5, 10):
         labels = make_label(close, horizon=h)

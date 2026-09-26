@@ -1,6 +1,7 @@
-"""Backtest a BUY/SELL strategy against a buy-and-hold baseline.
+"""
+Backtest a BUY/SELL strategy against a buy-and-hold baseline.
 
-Phase 1.5 deliverable — the last piece of the thin end-to-end slice.
+Phase 1.5 deliverable the last piece of the thin end-to-end slice.
 
 The honest question this answers
 --------------------------------
@@ -73,8 +74,8 @@ def _max_drawdown(equity: pd.Series) -> float:
 
 
 def _sharpe(daily_returns: pd.Series) -> float:
-    """Annualised Sharpe ratio (risk-free rate assumed 0 for simplicity).
-
+    """
+    Annualised Sharpe ratio (risk-free rate assumed 0 for simplicity).
     Returns 0.0 if returns have no variance (avoids divide-by-zero).
     """
     if daily_returns.std() == 0 or len(daily_returns) == 0:
@@ -89,7 +90,8 @@ def backtest(
     predictions: pd.Series,
     cost_per_trade: float = 0.001,
 ) -> BacktestResult:
-    """Run a long/flat backtest of predictions against buy-and-hold.
+    """
+    Run a long/flat backtest of predictions against buy-and-hold.
 
     Args:
         close: Closing prices over the test period, date-indexed.

@@ -1,8 +1,9 @@
-"""Tests for src.explain.plain_english.
+"""
+Tests for src.explain.plain_english.
 
 We verify that each indicator rule fires at the right thresholds and leans the
 right way (bullish/bearish/neutral), and that the explanation pairs correctly
-with the recommendation. These are behavioural tests — the 'maths' here is the
+with the recommendation. These are behavioural tests the 'maths' here is the
 threshold logic, so we check the boundaries.
 """
 
@@ -20,7 +21,7 @@ from src.explain.plain_english import (
 from src.features.target import BUY, SELL
 
 
-# --- RSI thresholds ----------------------------------------------------------
+# RSI thresholds 
 
 def test_rsi_overbought_is_bearish() -> None:
     assert _rsi_signal(75).leaning == "bearish"
@@ -36,7 +37,7 @@ def test_rsi_normal_is_neutral() -> None:
     assert _rsi_signal(50).leaning == "neutral"
 
 
-# --- MACD --------------------------------------------------------------------
+# MACD 
 
 def test_macd_positive_is_bullish() -> None:
     assert _macd_signal(0.5).leaning == "bullish"
@@ -50,7 +51,7 @@ def test_macd_zero_is_neutral() -> None:
     assert _macd_signal(0.0).leaning == "neutral"
 
 
-# --- Momentum ----------------------------------------------------------------
+# Momentum 
 
 def test_momentum_strong_up_is_bullish() -> None:
     assert _momentum_signal(0.05).leaning == "bullish"
@@ -64,7 +65,7 @@ def test_momentum_flat_is_neutral() -> None:
     assert _momentum_signal(0.0).leaning == "neutral"
 
 
-# --- Price vs average --------------------------------------------------------
+# Price vs average 
 
 def test_price_above_average_is_bullish() -> None:
     assert _price_vs_average_signal(110, 100).leaning == "bullish"
@@ -74,7 +75,7 @@ def test_price_below_average_is_bearish() -> None:
     assert _price_vs_average_signal(90, 100).leaning == "bearish"
 
 
-# --- Full explanation --------------------------------------------------------
+# Full explanation 
 
 def test_explain_buy_recommendation() -> None:
     exp = explain(

@@ -1,7 +1,8 @@
-"""Tests for src.models.sequences.
+"""
+Tests for src.models.sequences.
 
 The windowing is the most leakage-prone part of the LSTM, so these tests verify
-the shape maths and — critically — that each window's label is the label of the
+the shape maths and  critically  that each window's label is the label of the
 LAST day in that window (not the first, a common off-by-one bug).
 """
 

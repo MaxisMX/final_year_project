@@ -1,5 +1,5 @@
-"""Tests for src.explain.shap_analysis.
-
+"""
+Tests for src.explain.shap_analysis.
 We verify the SHAP wiring: correct output shape, BUY-class orientation, and the
 summary methods. We train a small RF on a signal where one feature genuinely
 drives the label, then check SHAP correctly identifies that feature as the most
@@ -17,7 +17,8 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 def _model_with_known_driver(seed: int = 0):
-    """Train an RF where 'rsi_14' alone determines the label.
+    """
+    Train an RF where 'rsi_14' alone determines the label.
 
     SHAP should then rank rsi_14 as by far the most important feature.
     """

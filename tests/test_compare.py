@@ -1,4 +1,5 @@
-"""Tests for src.models.compare.
+"""
+Tests for src.models.compare.
 
 The central fairness guarantee: RF and LSTM are scored on the IDENTICAL set of
 dates within each fold. We also check fold structure, aggregate stats, and the

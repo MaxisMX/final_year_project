@@ -1,6 +1,6 @@
 """Flask web application for the Financial Advisor Bot.
 
-Phase 4.2 — a thin HTTP layer over src/web/service.py. It does NOT contain any
+Phase 4.2 a thin HTTP layer over src/web/service.py. It does NOT contain any
 ML logic; it just exposes the service over HTTP and serves the frontend.
 
 Routes
@@ -10,7 +10,7 @@ Routes
 
 The /api endpoint returns the service's to_dict() output, or a JSON error with
 an appropriate HTTP status if the ticker is invalid. Keeping the API and the
-page separate means the frontend is just a client of the API — clean, testable,
+page separate means the frontend is just a client of the API clean, testable,
 and easy to demonstrate.
 
 Run it

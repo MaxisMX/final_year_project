@@ -1,4 +1,5 @@
-"""Random Forest baseline classifier for BUY/SELL prediction.
+"""
+Random Forest baseline classifier for BUY/SELL prediction.
 
 Phase 1.4 deliverable. This closes the thin end-to-end slice:
     data -> features -> label -> train/test split -> model -> evaluation.
@@ -93,7 +94,8 @@ def chronological_split(
     label_column: str = "label_5d",
     train_fraction: float = 0.8,
 ) -> SplitData:
-    """Split a labelled feature frame chronologically (no shuffling).
+    """
+    Split a labelled feature frame chronologically (no shuffling).
 
     The earliest `train_fraction` of rows become the training set; the rest are
     the test set. Rows must already be in date order and fully labelled (call
@@ -141,7 +143,8 @@ def train_random_forest(
     max_depth: int | None = 5,
     random_state: int = 42,
 ) -> RandomForestClassifier:
-    """Train a Random Forest classifier.
+    """
+    Train a Random Forest classifier.
 
     max_depth is capped (5) by default to limit overfitting on noisy financial
     features — a deep forest will happily memorise noise. random_state is fixed

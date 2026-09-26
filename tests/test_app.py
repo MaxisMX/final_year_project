@@ -1,4 +1,5 @@
-"""Tests for src.web.app (the Flask API).
+"""
+Tests for src.web.app (the Flask API).
 
 We use Flask's test client and mock the service layer so these run fast and
 offline. They verify the HTTP contract: success -> 200 + JSON, bad ticker ->

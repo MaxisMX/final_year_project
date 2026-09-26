@@ -1,4 +1,5 @@
-"""Smoke test — confirms the package imports and pytest discovery works.
+"""
+Smoke test will confirms the package imports and pytest discovery works.
 
 The brief assesses software engineering and testing across all grade bands;
 for a 1st, testing must be evident in *all* components. Real tests will

@@ -1,4 +1,5 @@
-"""Sequence windowing for the LSTM model.
+"""
+Sequence windowing for the LSTM model.
 
 Phase 2.3 (part 1). The LSTM does NOT see one day at a time like the Random
 Forest. It sees an ordered WINDOW of the last `lookback` days, and predicts the
@@ -38,7 +39,8 @@ def make_sequences(
     labels: pd.Series,
     lookback: int = 60,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Convert a feature frame + labels into LSTM sequence windows.
+    """
+    Convert a feature frame + labels into LSTM sequence windows.
 
     Args:
         features: DataFrame of shape (n_days, n_features), date-ordered, NaN-free.

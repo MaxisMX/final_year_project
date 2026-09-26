@@ -1,5 +1,5 @@
-"""Tests for src.web.service.
-
+"""
+Tests for src.web.service.
 The service calls slow, networked things (yfinance, LSTM training), so we mock
 those and test OUR logic: the pipeline wiring, the per-ticker cache, error
 handling for bad tickers, and the JSON-serialisable output shape.

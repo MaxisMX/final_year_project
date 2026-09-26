@@ -1,6 +1,6 @@
 """LSTM classifier for BUY/SELL prediction.
 
-Phase 2.3 (part 2) — your proposal's main model.
+Phase 2.3 (part 2) main model.
 
 What's different from the Random Forest
 ---------------------------------------
@@ -56,7 +56,8 @@ def set_seeds(seed: int = DEFAULT_SEED) -> None:
 
 
 def build_lstm(lookback: int, n_features: int, seed: int = DEFAULT_SEED) -> Sequential:
-    """Build a compact LSTM classifier.
+    """
+    Build a compact LSTM classifier.
 
     Deliberately small (one LSTM layer + dropout) to limit overfitting on noisy
     financial data — a large network will memorise noise and generalise worse.
@@ -96,7 +97,8 @@ def train_lstm(
     seed: int = DEFAULT_SEED,
     verbose: int = 0,
 ) -> LSTMArtifacts:
-    """Train an LSTM on a training slice (leakage-safe scaling + windowing).
+    """
+    Train an LSTM on a training slice (leakage-safe scaling + windowing).
 
     The scaler is fit ONLY on this training slice. EarlyStopping halts training
     when validation loss stops improving, using the last 20% of the (time-ordered)
@@ -153,7 +155,8 @@ def predict_lstm(
     label_column: str = "label_5d",
     threshold: float = 0.5,
 ) -> tuple[pd.Series, pd.Series]:
-    """Predict BUY/SELL on a test slice using a trained LSTM.
+    """
+    Predict BUY/SELL on a test slice using a trained LSTM.
 
     The test features are scaled with the TRAINING scaler (not refit), and
     windowed separately so no window straddles the train/test boundary.

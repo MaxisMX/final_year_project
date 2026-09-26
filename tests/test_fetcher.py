@@ -1,8 +1,9 @@
-"""Tests for src.data.fetcher.
+"""
+Tests for src.data.fetcher.
 
 We mock yfinance.download so these tests run offline and deterministically.
-They verify OUR logic — column normalisation, caching, gap detection, error
-handling — not Yahoo's servers. A separate manual run (python -m src.data.fetcher)
+They verify OUR logic column normalisation, caching, gap detection, error
+handling not Yahoo's servers. A separate manual run (python -m src.data.fetcher)
 is how you confirm the live API actually works.
 """
 
@@ -17,7 +18,8 @@ from src.data import fetcher
 
 
 def _fake_yf_frame(n_days: int = 10) -> pd.DataFrame:
-    """Build a DataFrame shaped exactly like modern yfinance single-ticker output.
+    """
+    Build a DataFrame shaped exactly like modern yfinance single-ticker output.
 
     That means MultiIndex columns like ('Close', 'MSFT') and an 'Adj Close'
     column that our normaliser should drop.

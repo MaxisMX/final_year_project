@@ -1,4 +1,5 @@
-"""Technical indicators computed from OHLCV data.
+"""
+Technical indicators computed from OHLCV data.
 
 Phase 1.2 deliverable. We start with two indicators:
   - Simple Moving Average (SMA): the average closing price over a window.
@@ -23,7 +24,8 @@ import pandas as pd
 
 
 def sma(close: pd.Series, window: int = 20) -> pd.Series:
-    """Simple Moving Average of the closing price.
+    """
+    Simple Moving Average of the closing price.
 
     Args:
         close: Series of closing prices, indexed by date.
@@ -38,7 +40,8 @@ def sma(close: pd.Series, window: int = 20) -> pd.Series:
 
 
 def rsi(close: pd.Series, window: int = 14) -> pd.Series:
-    """Relative Strength Index using Wilder's smoothing method.
+    """
+    Relative Strength Index using Wilder's smoothing method.
 
     RSI = 100 - (100 / (1 + RS)), where RS = avg gain / avg loss over `window`.
 
@@ -83,7 +86,8 @@ def rsi(close: pd.Series, window: int = 14) -> pd.Series:
 
 
 def _wilder_smooth(values: pd.Series, window: int) -> pd.Series:
-    """Wilder's smoothing: simple mean seed, then recursive smoothing.
+    """
+    Wilder's smoothing: simple mean seed, then recursive smoothing.
 
     The first valid value (at index position `window`, since values[0] is the
     NaN from .diff()) is the simple mean of the first `window` real values.
@@ -112,7 +116,8 @@ def macd(
     slow: int = 26,
     signal: int = 9,
 ) -> pd.DataFrame:
-    """Moving Average Convergence Divergence.
+    """
+    Moving Average Convergence Divergence.
 
     MACD line   = EMA(fast) - EMA(slow)
     Signal line = EMA(signal) of the MACD line
@@ -142,7 +147,8 @@ def bollinger_bands(
     window: int = 20,
     num_std: float = 2.0,
 ) -> pd.DataFrame:
-    """Bollinger Bands.
+    """
+    Bollinger Bands.
 
     Middle band = SMA(window)
     Upper/Lower = middle +/- num_std * rolling standard deviation
@@ -167,7 +173,8 @@ def bollinger_bands(
 
 
 def volume_ratio(volume: pd.Series, window: int = 20) -> pd.Series:
-    """Ratio of current volume to its rolling average.
+    """
+    Ratio of current volume to its rolling average.
 
     volume_ratio(t) = volume(t) / mean(volume over last `window` days)
 
@@ -181,7 +188,8 @@ def volume_ratio(volume: pd.Series, window: int = 20) -> pd.Series:
 
 
 def momentum(close: pd.Series, periods: int) -> pd.Series:
-    """Price momentum: fractional change over `periods` trading days.
+    """
+    Price momentum: fractional change over `periods` trading days.
 
     momentum(t) = close(t) / close(t - periods) - 1
 
@@ -194,7 +202,8 @@ def momentum(close: pd.Series, periods: int) -> pd.Series:
 
 
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
-    """Attach the full indicator set to an OHLCV frame.
+    """
+    Attach the full indicator set to an OHLCV frame.
 
     Returns a NEW frame with indicator columns added. Input is not mutated.
     This is the single registration point — add new indicators here and the

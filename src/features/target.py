@@ -1,4 +1,5 @@
-"""Define the prediction target (label) for the BUY/SELL classifier.
+"""
+Define the prediction target (label) for the BUY/SELL classifier.
 
 Phase 1.3 deliverable. This is the most leakage-prone part of the project, so
 the discipline is explicit and tested.
@@ -23,12 +24,6 @@ Why this is leakage-safe
     to drop them, or accidentally filling them, is a classic silent bug — so we
     make the NaNs explicit and test for them.
 
-A note on honesty
------------------
-This label ignores transaction costs and assumes you can transact at the close.
-That's standard for a first pass, but the backtest (Phase 1.5+) is where we
-confront whether the strategy survives real-world frictions. Don't let a good
-label-prediction accuracy fool you into thinking the strategy is profitable.
 """
 
 from __future__ import annotations
@@ -41,7 +36,8 @@ SELL = 0
 
 
 def forward_return(close: pd.Series, horizon: int = 5) -> pd.Series:
-    """Return over the next `horizon` trading days.
+    """
+    Return over the next `horizon` trading days.
 
     forward_return(t) = close(t + horizon) / close(t) - 1
 
@@ -61,7 +57,8 @@ def forward_return(close: pd.Series, horizon: int = 5) -> pd.Series:
 
 
 def make_label(close: pd.Series, horizon: int = 5) -> pd.Series:
-    """Binary BUY/SELL label from the sign of the forward return.
+    """
+    Binary BUY/SELL label from the sign of the forward return.
 
     BUY (1) if the price `horizon` days ahead is higher than today, else SELL (0).
     The last `horizon` rows are NaN (no future available) and must be dropped
@@ -85,7 +82,8 @@ def make_label(close: pd.Series, horizon: int = 5) -> pd.Series:
 
 
 def attach_label(df: pd.DataFrame, horizon: int = 5) -> pd.DataFrame:
-    """Attach the label column to a feature frame, without mutating the input.
+    """
+    Attach the label column to a feature frame, without mutating the input.
 
     Returns a NEW frame. The caller is responsible for dropping rows where the
     label is NaN before training (use `drop_unlabelled`).
@@ -96,7 +94,8 @@ def attach_label(df: pd.DataFrame, horizon: int = 5) -> pd.DataFrame:
 
 
 def drop_unlabelled(df: pd.DataFrame, horizon: int = 5) -> pd.DataFrame:
-    """Drop rows where the label is NaN (the final `horizon` rows).
+    """
+    Drop rows where the label is NaN (the final `horizon` rows).
 
     This is the step people forget. Keeping unlabelled rows in the training set
     will either crash the model or, worse, get them silently filled somewhere.

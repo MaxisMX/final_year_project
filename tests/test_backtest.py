@@ -1,4 +1,5 @@
-"""Tests for src.backtest.engine.
+"""
+Tests for src.backtest.engine.
 
 The headline guards:
   - The 1-day action lag holds (you act on a prediction the day AFTER it's made,
@@ -24,7 +25,8 @@ def _series(values: list[float], start: str = "2020-01-01") -> pd.Series:
 
 
 def test_action_lag_is_applied() -> None:
-    """A prediction on day t must be acted on at day t+1, not day t.
+    """
+    A prediction on day t must be acted on at day t+1, not day t.
 
     Prices: [100, 110, 121] -> daily returns [_, +10%, +10%].
     Predictions: [BUY, SELL, SELL].

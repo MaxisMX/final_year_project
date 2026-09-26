@@ -1,5 +1,5 @@
-"""Walk-forward validation for time-series-honest model evaluation.
-
+"""
+Walk-forward validation for time-series-honest model evaluation.
 Phase 2.2 deliverable. Replaces the single chronological split with a sequence
 of expanding-window folds, giving a DISTRIBUTION of performance rather than one
 number.
@@ -8,7 +8,7 @@ Why this matters
 ----------------
 A single train/test split tells you how the model did on ONE test period. That
 could be luck — an unusually trending or choppy stretch. Walk-forward trains and
-tests repeatedly across different periods, so you can report e.g. "accuracy
+tests repeatedly across different periods, so I can report e.g. "accuracy
 0.52 +/- 0.03 across 6 folds" and know whether the model is CONSISTENTLY okay
 or just got lucky once. This is the clearest signal of time-series evaluation
 maturity you can show, and it directly mirrors how a strategy would be re-trained
@@ -101,7 +101,8 @@ def walk_forward_validate(
     label_column: str = "label_5d",
     min_train_size: int | None = None,
 ) -> WalkForwardResult:
-    """Run expanding-window walk-forward validation.
+    """
+    Run expanding-window walk-forward validation.
 
     The data is divided into (n_splits + 1) equal time blocks. Fold i trains on
     blocks [0..i] and tests on block i+1, so every test block is preceded by all

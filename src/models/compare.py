@@ -1,4 +1,5 @@
-"""Fair RF vs LSTM vs GRU vs CNN-LSTM comparison under identical walk-forward folds.
+"""
+Fair RF vs LSTM vs GRU vs CNN-LSTM comparison under identical walk-forward folds.
 
 Phase 2.5 deliverable, extended in response to supervisor feedback that Random
 Forest and LSTM alone are weak predictors. This compares four architectures
@@ -67,7 +68,9 @@ MODEL_LABELS = {
 
 
 def _confusion_df(y_true: pd.Series, preds: pd.Series) -> pd.DataFrame:
-    """Confusion matrix as a labelled frame, matching EvalResult's convention."""
+    """
+    Confusion matrix as a labelled frame, matching EvalResult's convention.
+    """
     cm = confusion_matrix(y_true, preds, labels=[SELL, BUY])
     return pd.DataFrame(
         cm, index=["actual_SELL", "actual_BUY"], columns=["pred_SELL", "pred_BUY"]
@@ -211,8 +214,8 @@ def compare_models(
     gru_epochs: int | None = None,
     cnn_epochs: int | None = None,
 ) -> ComparisonResult:
-    """Run RF, LSTM, GRU and CNN-LSTM through identical expanding-window folds.
-
+    """
+    Run RF, LSTM, GRU and CNN-LSTM through identical expanding-window folds.
     Args:
         gru_epochs, cnn_epochs: Epoch budgets for the deep models. Both default
             to `lstm_epochs` so all three deep models get an identical budget -
@@ -252,7 +255,7 @@ def compare_models(
         if len(test_df) <= lookback:
             continue
 
-        # --- Plain LSTM: defines the common scoring dates ---
+        # Plain LSTM: defines the common scoring dates 
         lstm_art = train_lstm(
             train_df,
             feature_columns=feature_columns,
@@ -265,7 +268,7 @@ def compare_models(
         )
         common_dates = lstm_preds.index
 
-        # --- GRU: same lookback, so same reachable dates ---
+        #  GRU: same lookback, so same reachable dates 
         gru_art = train_gru(
             train_df,
             feature_columns=feature_columns,
@@ -296,7 +299,7 @@ def compare_models(
                     f"indicates a windowing bug."
                 )
 
-        # --- RF: train on same data, predict, then RESTRICT to common dates ---
+        # RF: train on same data, predict, then RESTRICT to common dates 
         rf_model = train_random_forest(train_df[feature_columns], y_train)
         rf_pred_all = pd.Series(
             rf_model.predict(test_df[feature_columns]), index=test_df.index

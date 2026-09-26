@@ -1,9 +1,10 @@
-"""Tests for src.features.indicators.
+"""
+Tests for src.features.indicators.
 
 These tests verify the indicator MATHS against hand-worked and published
-examples. The RSI test in particular uses Wilder's canonical example — an
-earlier implementation passed the easy edge cases but got this wrong (returned
-~50.7 instead of ~70.53), which would have silently fed the model bad features.
+examples. The RSI test in particular uses Wilder's canonical example 
+an earlier implementation passed the easy edge cases but got this wrong 
+(returned ~50.7 instead of ~70.53), which would have silently fed the model bad features.
 This test exists so that bug can never come back unnoticed.
 """
 
@@ -15,7 +16,7 @@ import pytest
 from src.features.indicators import add_indicators, rsi, sma
 
 
-# --- SMA ---------------------------------------------------------------------
+# SMA 
 
 def test_sma_basic_average() -> None:
     # Last 3 of [1,2,3,4,5] -> (3+4+5)/3 = 4.0
@@ -42,7 +43,7 @@ def test_sma_does_not_mutate_input() -> None:
     pd.testing.assert_series_equal(s, original)
 
 
-# --- RSI ---------------------------------------------------------------------
+# RSI 
 
 def test_rsi_wilder_canonical_example() -> None:
     """Wilder's published 14-period example: first RSI value is ~70.53.
@@ -87,7 +88,7 @@ def test_rsi_insufficient_data_all_nan() -> None:
     assert rsi(prices, 14).isna().all()
 
 
-# --- add_indicators ----------------------------------------------------------
+# add_indicators 
 
 def test_add_indicators_attaches_columns_without_mutating() -> None:
     df = pd.DataFrame(
@@ -109,7 +110,7 @@ def test_add_indicators_attaches_columns_without_mutating() -> None:
     assert "rsi_14" in out.columns
 
 
-# --- Phase 2 indicators ------------------------------------------------------
+# Phase 2 indicators 
 
 def test_macd_zero_on_constant_series() -> None:
     """On a flat price, fast and slow EMAs are equal, so every MACD part is 0."""

@@ -1,4 +1,5 @@
-"""Fetch and cache OHLCV stock data from Yahoo Finance.
+"""
+Fetch and cache OHLCV stock data from Yahoo Finance.
 
 Phase 1.1 deliverable. Responsibilities:
   - Download daily OHLCV data for a single ticker via yfinance.
@@ -33,7 +34,8 @@ DEFAULT_CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 
 
 def _normalise_columns(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
-    """Flatten yfinance output into single-level OHLCV columns.
+    """
+    Flatten yfinance output into single-level OHLCV columns.
 
     Modern yfinance returns MultiIndex columns like ('Close', 'MSFT') even for a
     single ticker. We flatten to just 'Close', drop any extra columns (e.g.
@@ -62,12 +64,13 @@ def _normalise_columns(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
 
 
 def count_missing_trading_days(df: pd.DataFrame) -> int:
-    """Count gaps in the business-day index (excluding weekends).
+    """
+    Count gaps in the business-day index (excluding weekends).
 
     This is a sanity signal, not a fix. A handful of gaps is normal (public
     holidays). A large number suggests a data problem worth investigating.
     Note: this counts weekday gaps, so US market holidays will show up here too
-    — it is an upper bound on 'suspicious' missingness, not an exact figure.
+    it is an upper bound on 'suspicious' missingness, not an exact figure.
     """
     if df.empty:
         return 0
@@ -98,8 +101,8 @@ def fetch_ohlcv(
     cache_dir: Path | None = None,
     force_refresh: bool = False,
 ) -> pd.DataFrame:
-    """Fetch daily OHLCV data for a single ticker, using a local cache.
-
+    """
+    Fetch daily OHLCV data for a single ticker, using a local cache.
     Args:
         ticker: Stock symbol, e.g. "MSFT".
         start: Start date (YYYY-MM-DD).

@@ -1,7 +1,7 @@
-"""Tests for src.models.gru.
-
-These deliberately use a TINY lookback and few epochs so they run fast - the
-goal is to verify the leakage-safe plumbing, not to train a good model:
+"""
+Tests for src.models.gru.
+These deliberately use a TINY lookback and few epochs so they run fast 
+the goal is to verify the leakage-safe plumbing, not to train a good model:
   - The scaler is fit on training data only (the core leakage guarantee).
   - Predictions align to the correct dates (last day of each window).
   - Train and test windowing never straddle the boundary.
@@ -40,8 +40,8 @@ def test_train_returns_artifacts_with_fitted_scaler() -> None:
 
 
 def test_scaler_fit_on_train_only() -> None:
-    """The scaler's learned mean must match the TRAINING data, not test data.
-
+    """
+    The scaler's learned mean must match the TRAINING data, not test data.
     We fit on one frame, then check the scaler's mean equals that frame's mean -
     proving it never saw any other (test) data.
     """
