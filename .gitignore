@@ -45,3 +45,7 @@ logs/
 # Coverage
 .coverage
 htmlcov/
+
+# Folder
+report/
+source_for_fyp/
